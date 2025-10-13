@@ -12,24 +12,23 @@
                     <div class="p-6 bg-white border-b border-gray-200">
                         <!-- Movie List -->
                         <h1 class="text-2xl font-bold mb-4">Movie List</h1>
+
+
                         @if($movies->isEmpty())
                             <p>No movies available.</p>
                         @else
                             <ul class="list-disc pl-5 space-y-2">
                                 @foreach($movies as $movie)
                                     <li>
-                                        <a href="{{ route('movies.show', $movie->id) }}" class="text-blue-600 hover:underline">
-                                            {{ $movie->title }} ({{ $movie->release_year ?? 'N/A' }})
-
-                                            {{-- {{ $movie->release_year ? $movie->release_year->format('Y') : 'N/A' }} I removed as release_year is an integer field so format was not needed --}}
-
+                                        <a href="{{ route('movies.show', $movie->id) }}">
+                                        <x-movie-card
+                                            :title="$movie->title"
+                                            :releaseDate="$movie->release_date"
+                                            :genre="$movie->genre"
+                                            :description="$movie->description"
+                                            :image="$movie->image"
+                                        />
                                         </a>
-                                        <p class="text-sm text-gray-600">Genre: {{ $movie->genre ?? 'Unknown' }}</p>
-
-                                        @if($movie->cover)
-                                            <img src="{{ asset('storage/' . $movie->cover) }}" alt="{{ $movie->title }}" class="mt-2 w-48 h-auto">
-                                        @endif
-                                    </li>
                                 @endforeach
                             </ul>
                         @endif
