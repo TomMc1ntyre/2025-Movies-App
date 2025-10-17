@@ -21,7 +21,7 @@ class MovieController extends Controller
      */
     public function create()
     {
-        //
+        return view('movies.create'); //returns the view to create a new movie
     }
 
     /**
@@ -29,7 +29,32 @@ class MovieController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // validate the incoming request data
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'release_year' => 'required|integer',
+            'cover' => 'required|cover|mimes:jpeg,png,jpg,gif|max:2048',
+            'genre' => 'required|string|max:100',
+        ]);
+        // handle file upload
+        if ($request->hasFile('cover')) {
+            $coverName = time().'.'.$request->image->extension();
+            $request->cover->move(public_path('covers'), $coverName);
+        }
+        // create new movie record in the database
+        Movie::create([
+            'title' => $request->title,
+            'description' => $request->description,
+            'release_year' => $request->release_year,
+            'cover' => $coverName,
+            'genre' => $request->genre,
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
+
+        // redirects to movies index with success message
+        return redirect()->route('movies.index')->with('success', 'Movie created successfully.');
     }
 
     /**
@@ -37,7 +62,7 @@ class MovieController extends Controller
      */
     public function show(Movie $movie)
     {
-        //
+        return view('movies.show', compact('movie')); //returns the view with the specific movie data
     }
 
     /**

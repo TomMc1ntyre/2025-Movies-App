@@ -2,12 +2,11 @@
 
 namespace App\View\Components;
 
-use App\Models\Movie;
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 
-class MovieCard extends Component
+class MovieForm extends Component
 {
     /**
      * Create a new component instance.
@@ -22,11 +21,6 @@ class MovieCard extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.movie-card');
+        return view('components.movie-form');
     }
-
-    /**
-     * Show the movie details page.
-     */
-    
 }
