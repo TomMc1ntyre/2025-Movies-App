@@ -13,19 +13,20 @@
                         <!-- Movie List -->
                         <h1 class="text-2xl font-bold mb-4">Movie List</h1>
 
-
                         @if ($movies->isEmpty())
                             <p>No movies available.</p>
                         @else
-                            <ul class="list-disc pl-5 space-y-2">
+                            <div class="md:grid grid-cols-3 gap-4 w-10">
                                 @foreach ($movies as $movie)
-                                    <li>
-                                        <a href="{{ route('movies.show', $movie->id) }}">
-                                            <x-movie-card :title="$movie->title" :release_year="$movie->release_year" :genre="$movie->genre"
-                                                :cover="$movie->cover" />
-                                        </a>
+                                    <a href="{{ route('movies.show', $movie->id) }}"class = "w-full">
+                                        <x-movie-card 
+                                            :title="$movie->title" 
+                                            :release_year="$movie->release_year" 
+                                            :genre="$movie->genre"
+                                            :cover="$movie->cover" />
+                                    </a>
                                 @endforeach
-                            </ul>
+                            </div>
                         @endif
                     </div>
                 </div>
