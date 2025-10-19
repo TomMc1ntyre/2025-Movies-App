@@ -4,6 +4,10 @@
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 {{ __('Movies') }}
             </h2>
+
+            <x-alert-success>
+                {{ session('success') }}
+            </x-alert-success>
         </x-slot>
 
         <div class="py-12">
@@ -16,7 +20,7 @@
                         @if ($movies->isEmpty())
                             <p>No movies available.</p>
                         @else
-                            <div class="md:grid grid-cols-3 gap-4 w-10">
+                            <div class="md:grid grid-cols-3 gap-4">
                                 @foreach ($movies as $movie)
                                     <a href="{{ route('movies.show', $movie->id) }}"class = "w-full">
                                         <x-movie-card 
@@ -25,6 +29,8 @@
                                             :genre="$movie->genre"
                                             :cover="$movie->cover" />
                                     </a>
+
+                                    
                                 @endforeach
                             </div>
                         @endif

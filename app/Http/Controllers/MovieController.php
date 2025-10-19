@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Movie;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class MovieController extends Controller
 {
@@ -29,19 +30,24 @@ class MovieController extends Controller
      */
     public function store(Request $request)
     {
+        
         // validate the incoming request data
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'release_year' => 'required|integer',
-            'cover' => 'required|cover|mimes:jpeg,png,jpg,gif|max:2048',
+            'cover' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'genre' => 'required|string|max:100',
         ]);
         // handle file upload
         if ($request->hasFile('cover')) {
-            $coverName = time().'.'.$request->image->extension();
-            $request->cover->move(public_path('covers'), $coverName);
+            $cover = $request->file('cover');
+            $coverName = time().'.'.$cover->getClientOriginalExtension();
+            $cover->move(public_path('covers'), $coverName);
+        } else {
+            $coverName = null; // or set a default image name
         }
+
         // create new movie record in the database
         Movie::create([
             'title' => $request->title,

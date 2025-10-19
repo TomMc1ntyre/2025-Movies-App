@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('create New Book') }}
+            {{ __('create New Movie') }}
         </h2>
     </x-slot>
 
@@ -11,7 +11,7 @@
                 <div class="p-6 text-gray-900">
                     <h3 class="font-semibold text-lg mb-4">Add new Movie:</h3>
 
-                    <x-book-form
+                    <x-movie-form
                         :action="route('movies.store')"
                         method="POST"
                     />

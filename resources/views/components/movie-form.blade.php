@@ -1,50 +1,87 @@
-@props(['action', 'method'])
+@props(['action', 'method', 'movie'])
 
-<!-- Form starts, with dynamic action and method (e.g., POST, PUT, PATCH) -->
 <form action="{{ $action }}" method="POST" enctype="multipart/form-data">
-    @csrf <!-- CSRF token for security -->
-
-    <!-- If the method is PUT or PATCH, spoof the method using @method -->
-    @if ($method === 'PUT' || $method === 'PATCH')
-        @method($method) <!-- Adds a hidden _method input for PUT/PATCH requests -->
+    @csrf
+    @if($method === 'PUT' || $method === 'PATCH')
+        @method($method)
     @endif
 
-    <!-- Title Field -->
-    <div class="mb-4">
-        <label for="title" class="block text-sm text-gray-700">Title</label>
-        <input type="text" name="title" id="title" value="{{ old('title', $movie->title ?? '') }}" required
-            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" />
-        @error('title')
-            <p class="text-sm text-red-600">{{ $message }}</p>
-        @enderror
-    </div>
+    <!-- Title -->
+<div class="mb-4">
+    <label for="title" class="block text-gray-700 font-semibold mb-1">Title</label>
+    <input 
+        type="text" 
+        name="title" 
+        id="title" 
+        value="{{ old('title', $movie->title ?? '') }}" 
+        required
+        class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+    >
+    @error('title')<p class="text-red-500 text-sm mt-1">{{ $message }}</p>@enderror
+</div>
 
-    <!-- Cover Upload Field -->
-    <div class="mb-4">
-        <label for="cover" class="block text-sm font-medium text-gray-700">Movie Cover Image</label>
-        <input type="file" name="cover" id="cover" {{ isset($movie) ? '' : 'required' }}
-            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" />
-        @error('cover')
-            <p class="text-sm text-red-600">{{ $message }}</p>
-        @enderror
-    </div>
+<!-- Description -->
+<div class="mb-4">
+    <label for="description" class="block text-gray-700 font-semibold mb-1">Description</label>
+    <textarea 
+        name="description" 
+        id="description" 
+        required
+        class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+    >{{ old('description', $movie->description ?? '') }}</textarea>
+    @error('description')<p class="text-red-500 text-sm mt-1">{{ $message }}</p>@enderror
+</div>
 
-    <!-- Preview Existing Cover (Edit Mode) -->
+<!-- Release Year -->
+<div class="mb-4">
+    <label for="release_year" class="block text-gray-700 font-semibold mb-1">Release Year</label>
+    <input 
+        type="number" 
+        name="release_year" 
+        id="release_year" 
+        value="{{ old('release_year', $movie->release_year ?? '') }}" 
+        required
+        class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+    >
+    @error('release_year')<p class="text-red-500 text-sm mt-1">{{ $message }}</p>@enderror
+</div>
+
+<!-- Genre -->
+<div class="mb-4">
+    <label for="genre" class="block text-gray-700 font-semibold mb-1">Genre</label>
+    <input 
+        type="text" 
+        name="genre" 
+        id="genre" 
+        value="{{ old('genre', $movie->genre ?? '') }}" 
+        required
+        class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+    >
+    @error('genre')<p class="text-red-500 text-sm mt-1">{{ $message }}</p>@enderror
+</div>
+
+<!-- Cover -->
+<div class="mb-4">
+    <label for="cover" class="block text-gray-700 font-semibold mb-1">Cover Image</label>
+    <input 
+        type="file" 
+        name="cover" 
+        id="cover" 
+        {{ isset($movie) ? '' : 'required' }}
+        class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+    >
+    @error('cover')<p class="text-red-500 text-sm mt-1">{{ $message }}</p>@enderror
     @isset($movie->cover)
-        <div class="mb-4">
-            <img src="{{ asset('covers/' . $movie->cover) }}" alt="Movie cover" class="w-24 h-32 object-cover">
-        </div>
+        <img src="{{ asset('covers/' . $movie->cover) }}" alt="cover" class="w-24 h-32 mt-2 rounded">
     @endisset
-
-    <!-- Submit Button -->
-    <div>
-        <x-primary-button>
-            {{ isset($movie) ? 'Update Movie' : 'Add Movie' }}
-        </x-primary-button>
-    </div>
-
-    @endif
+</div>
 
 
+    <!-- Submit -->
+    <button type="submit" class="border bg-indigo-600 text-black font-semibold py-2 px-4 rounded hover:bg-indigo-700 transition">
+        {{ isset($movie) ? 'Update Movie' : 'Create Movie' }}
+    </button>
 
+
+    
 </form>
