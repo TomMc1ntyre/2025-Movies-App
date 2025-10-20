@@ -30,7 +30,7 @@ class MovieController extends Controller
      */
     public function store(Request $request)
     {
-        
+
         // validate the incoming request data
         $request->validate([
             'title' => 'required|string|max:255',
@@ -42,7 +42,7 @@ class MovieController extends Controller
         // handle file upload
         if ($request->hasFile('cover')) {
             $cover = $request->file('cover');
-            $coverName = time().'.'.$cover->getClientOriginalExtension();
+            $coverName = time() . '.' . $cover->getClientOriginalExtension();
             $cover->move(public_path('covers'), $coverName);
         } else {
             $coverName = null; // or set a default image name
@@ -76,7 +76,7 @@ class MovieController extends Controller
      */
     public function edit(Movie $movie)
     {
-        //
+        return view('movies.edit', compact('movie'));
     }
 
     /**
@@ -84,8 +84,26 @@ class MovieController extends Controller
      */
     public function update(Request $request, Movie $movie)
     {
-        //
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'release_year' => 'required|integer',
+            'cover' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'genre' => 'required|string|max:100',
+        ]);
+
+        $data = $request->only('title', 'release_year', 'description','cover','genre');
+
+        if ($request->hasFile('cover')) {
+            $path = $request->file('cover')->store('movies', 'public');
+            $data['cover'] = $path;
+        }
+
+        $movie->update($data);
+
+        return redirect()->route('movies.index')->with('success', 'Movie Card Updated Successfully');
     }
+
 
     /**
      * Remove the specified resource from storage.

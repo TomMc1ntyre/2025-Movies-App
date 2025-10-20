@@ -15,8 +15,6 @@ class Movie extends Model
         'release_year',
         'cover',
         'genre',
-        'created_at',
-        'updated_at',
     ];
 }
 
