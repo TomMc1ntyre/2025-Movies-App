@@ -15,6 +15,7 @@ class Movie extends Model
         'release_year',
         'cover',
         'genre',
+        'trailer',
     ];
 }
 

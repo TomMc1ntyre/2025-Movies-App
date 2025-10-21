@@ -1,6 +1,15 @@
 <x-guest-layout>
     <form method="POST" action="{{ route('register') }}">
         @csrf
+        {{-- Add a dropdown box to registration form that allows uses to choose user or admin --}}
+        <div>
+            <x-input-label for="role" :value="__('Register as')" />
+            <select id="role" name="role" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                <option value="user" selected>User</option>
+                <option value="admin">Admin</option>
+            </select>
+            <x-input-error :messages="$errors->get('role')" class="mt-2" />
+        </div>
 
         <!-- Name -->
         <div>

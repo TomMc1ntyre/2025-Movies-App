@@ -11,10 +11,20 @@ class MovieController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $movies = Movie::all(); //fetch all the moveis from the database
-        return view('movies.index', compact('movies')); //returns the view with the movies data
+
+
+        $query = Movie::query();
+
+        if ($request->filled('search')) {
+            $query->where('title', 'like', '%' . $request->search . '%');
+            }
+        $movies = $query->latest()->get();
+
+        return view('movies.index', compact('movies'));
+
     }
 
     /**
@@ -39,6 +49,7 @@ class MovieController extends Controller
             'cover' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'genre' => 'required|string|max:100',
         ]);
+
         // handle file upload
         if ($request->hasFile('cover')) {
             $cover = $request->file('cover');
@@ -135,4 +146,5 @@ class MovieController extends Controller
 
         return redirect()->route('movies.index')->with('success', 'Movie deleted successfully!');
     }
+
 }

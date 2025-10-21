@@ -24,6 +24,17 @@
                 </div>
             </div>
 
+
+            {{-- Links that only appear to admins users --}}
+            @if(Auth::user()->role === 'admin')
+
+                <x-nav-link :href="route('movies.index')" :active="request()->routeIs('movies.index')">
+                    {{ __('Create New Movie Card') }}
+                </x-nav-link>
+
+            @endif
+
+
             <!-- Settings Dropdown -->
             <div class="hidden sm:flex sm:items-center sm:ms-6">
                 <x-dropdown align="right" width="48">
