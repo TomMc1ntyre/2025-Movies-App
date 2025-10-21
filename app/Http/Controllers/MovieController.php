@@ -94,15 +94,24 @@ class MovieController extends Controller
 
         $data = $request->only('title', 'release_year', 'description', 'genre');
 
-        if ($request->hasFile('cover')) {
-            // Optional: Delete old cover to keep storage clean
-            if ($movie->cover && Storage::disk('public')->exists($movie->cover)) {
-                Storage::disk('public')->delete($movie->cover);
-            }
+        // if ($request->hasFile('cover')) {
+        //     // Optional: Delete old cover to keep storage clean
+        //     if ($movie->cover && Storage::disk('public')->exists($movie->cover)) {
+        //         Storage::disk('public')->delete($movie->cover);
+        //     }
 
-            $path = $request->file('cover')->store('movies', 'public');
-            $data['cover'] = $path;
+        //     $path = $request->file('cover')->store('covers', 'public');
+        //     $data['cover'] = basename($path);
+        // }
+        if ($request->hasFile('cover')) {
+            $cover = $request->file('cover');
+            $coverName = time() . '.' . $cover->getClientOriginalExtension();
+            $cover->move(public_path('covers'), $coverName);
+        } else {
+            $coverName = null; // or set a default image name
         }
+        $data['cover'] = $coverName;
+
 
         $movie->update($data);
 
@@ -117,6 +126,13 @@ class MovieController extends Controller
      */
     public function destroy(Movie $movie)
     {
-        //
+        // Optional: Delete cover image from storage
+        if ($movie->cover && Storage::disk('public')->exists($movie->cover)) {
+            Storage::disk('public')->delete($movie->cover);
+        }
+
+        $movie->delete();
+
+        return redirect()->route('movies.index')->with('success', 'Movie deleted successfully!');
     }
 }
