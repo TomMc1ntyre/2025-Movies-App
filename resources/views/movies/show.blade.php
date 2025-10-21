@@ -16,6 +16,19 @@
                     </div>
                     <p class="mt-2 text-gray-600"><strong>Release Year:</strong> {{ $movie->release_year }}</p>
                     <p class="mt-2 text-gray-600"><strong>genre:</strong> {{ $movie->genre }}</p>
+                    {{-- Edit button --}}
+                    <a href="{{ route('movies.edit', $movie->id) }}"
+                        class="bg-gray-500 text-white px-3 py-1 rounded hover:bg-blue-600">Edit</a>
+
+
+                    {{-- Delete button --}}
+                    <form action="{{ route('movies.destroy', $movie->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this movie?');" style="display: inline;">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="bg-gray-500 text-white px-3 py-0 rounded hover:bg-red-600 ">
+                        Delete
+                    </button>
+                    </form>
                 </div>
             </div>
         </div>

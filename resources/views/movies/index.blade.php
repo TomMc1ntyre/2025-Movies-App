@@ -29,20 +29,6 @@
                     <a href="{{ route('movies.show', $movie->id) }}"
                         class="bg-gray-500 text-white px-3 py-1 rounded hover:bg-gray-600">View</a>
 
-                    {{-- Edit button --}}
-                    <a href="{{ route('movies.edit', $movie->id) }}"
-                        class="bg-gray-500 text-white px-3 py-1 rounded hover:bg-blue-600">Edit</a>
-
-
-                    {{-- Delete button --}}
-                    <form action="{{ route('movies.destroy', $movie->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this movie?');" style="display: inline;">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="bg-gray-500 text-white px-3 py-1 rounded hover:bg-red-600 ">
-                        Delete
-                    </button>
-                    </form>
-
                 </div>
             </div>
             @endforeach
