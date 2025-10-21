@@ -88,21 +88,28 @@ class MovieController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'release_year' => 'required|integer',
-            'cover' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'genre' => 'required|string|max:100',
+            'cover' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        $data = $request->only('title', 'release_year', 'description','cover','genre');
+        $data = $request->only('title', 'release_year', 'description', 'genre');
 
         if ($request->hasFile('cover')) {
+            // Optional: Delete old cover to keep storage clean
+            if ($movie->cover && Storage::disk('public')->exists($movie->cover)) {
+                Storage::disk('public')->delete($movie->cover);
+            }
+
             $path = $request->file('cover')->store('movies', 'public');
             $data['cover'] = $path;
         }
 
         $movie->update($data);
 
-        return redirect()->route('movies.index')->with('success', 'Movie Card Updated Successfully');
+        return redirect()->route('movies.index')->with('success', 'Movie updated successfully!');
     }
+
+
 
 
     /**

@@ -10,40 +10,41 @@
             </x-alert-success>
         </x-slot>
 
-        <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6 bg-white border-b border-gray-200">
-                        <!-- Movie List -->
-                        <h1 class="text-2xl font-bold mb-4">Movie List</h1>
+        <div class="grid grid-cols-3 gap-6">
+            @foreach ($movies as $movie)
+            <!-- Container for one movie -->
+            <div class="bg-white rounded-lg shadow-md overflow-hidden flex flex-col">
 
-                        @if ($movies->isEmpty())
-                        <p>No movies available.</p>
-                        @else
-                        <div class="md:grid grid-cols-3 gap-4">
-                            @foreach ($movies as $movie)
-                            <a href="{{ route('movies.show', $movie->id) }}" class="w-full">
-                                <x-movie-card
-                                    :title="$movie->title"
-                                    :release_year="$movie->release_year"
-                                    :genre="$movie->genre"
-                                    :cover="$movie->cover" />
-                            </a>
-                            <!-- Edit Button -->
-                            <a href="{{ route('movies.edit', $movie->id) }}" class="bg-blue-500 text-b px-3 py-1 rounded">Edit</a>
+                <!-- Movie Card (not full-width link wrapping everything) -->
+                <div class="flex-grow">
+                    <x-movie-card
+                        :title="$movie->title"
+                        :release_year="$movie->release_year"
+                        :genre="$movie->genre"
+                        :cover="$movie->cover" />
+                </div>
 
-                            <!-- Delete Button (implementation later) -->
-                            <form action="{{ route('movies.destroy', $movie->id) }}" method="POST" class="inline">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" onclick="return confirm('Are you sure?')" class="bg-red-500 text-white px-3 py-1 rounded">Delete</button>
+                <!-- Buttons inside the same container -->
+                <div class="flex justify-between items-center p-4 border-t border-gray-200 bg-gray-50">
+                    <a href="{{ route('movies.show', $movie->id) }}"
+                        class="bg-gray-500 text-white px-3 py-1 rounded hover:bg-gray-600">View</a>
 
-                                @endforeach
-                        </div>
-                        @endif
-                    </div>
+                    <a href="{{ route('movies.edit', $movie->id) }}"
+                        class="bg-blue-500 text-black px-3 py-1 rounded hover:bg-blue-600">Edit</a>
+
+                    <form action="{{ route('movies.destroy', $movie->id) }}" method="POST"
+                        onsubmit="return confirm('Are you sure?')">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit"
+                            class="bg-red-500 text-black px-3 py-1 rounded hover:bg-red-600">
+                            Delete
+                        </button>
+                    </form>
                 </div>
             </div>
+            @endforeach
         </div>
+
     </x-app-layout>
 </div>
