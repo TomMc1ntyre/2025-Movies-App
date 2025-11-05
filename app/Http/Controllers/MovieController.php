@@ -5,43 +5,58 @@ namespace App\Http\Controllers;
 use App\Models\Movie;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth; // ✅ Needed for Auth::user()
 
 class MovieController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of all movies.
      */
     public function index(Request $request)
     {
-        $movies = Movie::all(); //fetch all the moveis from the database
-
-
+        // Build query for movies
         $query = Movie::query();
 
+        // Allow users to search by title
         if ($request->filled('search')) {
             $query->where('title', 'like', '%' . $request->search . '%');
-            }
+        }
+
+        // Get all movies ordered by newest first
         $movies = $query->latest()->get();
 
+        // Return the index view
         return view('movies.index', compact('movies'));
-
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Show the form for creating a new movie.
+     * Both admin and user can access this.
      */
     public function create()
     {
-        return view('movies.create'); //returns the view to create a new movie
+        // Any logged-in user (admin or ordinary user) can create a movie
+        if (!Auth::check()) {
+            // Redirect guests who are not logged in
+            return redirect()->route('movies.index')->with('error', 'You must be logged in to create a movie.');
+        }
+
+        // Return the create view
+        return view('movies.create');
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created movie in the database.
+     * Both admin and user can do this.
      */
     public function store(Request $request)
     {
+        // Ensure only logged-in users can store
+        if (!Auth::check()) {
+            return redirect()->route('movies.index')->with('error', 'Unauthorized access.');
+        }
 
-        // validate the incoming request data
+        // Validate input fields
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
@@ -50,16 +65,16 @@ class MovieController extends Controller
             'genre' => 'required|string|max:100',
         ]);
 
-        // handle file upload
+        // Handle image upload
         if ($request->hasFile('cover')) {
             $cover = $request->file('cover');
             $coverName = time() . '.' . $cover->getClientOriginalExtension();
             $cover->move(public_path('covers'), $coverName);
         } else {
-            $coverName = null; // or set a default image name
+            $coverName = null;
         }
 
-        // create new movie record in the database
+        // Save movie to database
         Movie::create([
             'title' => $request->title,
             'description' => $request->description,
@@ -67,34 +82,47 @@ class MovieController extends Controller
             'cover' => $coverName,
             'genre' => $request->genre,
             'created_at' => now(),
-            'updated_at' => now()
+            'updated_at' => now(),
         ]);
 
-        // redirects to movies index with success message
+        // Redirect back with success
         return redirect()->route('movies.index')->with('success', 'Movie created successfully.');
     }
 
     /**
-     * Display the specified resource.
+     * Show a specific movie.
      */
     public function show(Movie $movie)
     {
-        return view('movies.show', compact('movie')); //returns the view with the specific movie data
+        return view('movies.show', compact('movie'));
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Show the form for editing a movie.
+     * Only admins can do this.
      */
     public function edit(Movie $movie)
     {
+        // Check if user is admin
+        if (Auth::user()->role !== 'admin') {
+            return redirect()->route('movies.index')->with('error', 'Unauthorized access.');
+        }
+
         return view('movies.edit', compact('movie'));
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update a movie record.
+     * Only admins can do this.
      */
     public function update(Request $request, Movie $movie)
     {
+        // Check if user is admin
+        if (Auth::user()->role !== 'admin') {
+            return redirect()->route('movies.index')->with('error', 'Unauthorized access.');
+        }
+
+        // Validate form input
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
@@ -105,46 +133,39 @@ class MovieController extends Controller
 
         $data = $request->only('title', 'release_year', 'description', 'genre');
 
-        // if ($request->hasFile('cover')) {
-        //     // Optional: Delete old cover to keep storage clean
-        //     if ($movie->cover && Storage::disk('public')->exists($movie->cover)) {
-        //         Storage::disk('public')->delete($movie->cover);
-        //     }
-
-        //     $path = $request->file('cover')->store('covers', 'public');
-        //     $data['cover'] = basename($path);
-        // }
+        // If a new image is uploaded, handle it
         if ($request->hasFile('cover')) {
             $cover = $request->file('cover');
             $coverName = time() . '.' . $cover->getClientOriginalExtension();
             $cover->move(public_path('covers'), $coverName);
-        } else {
-            $coverName = null; // or set a default image name
+            $data['cover'] = $coverName;
         }
-        $data['cover'] = $coverName;
 
-
+        // Update the movie in the database
         $movie->update($data);
 
         return redirect()->route('movies.index')->with('success', 'Movie updated successfully!');
     }
 
-
-
-
     /**
-     * Remove the specified resource from storage.
+     * Delete a movie.
+     * Only admins can do this.
      */
     public function destroy(Movie $movie)
     {
-        // Optional: Delete cover image from storage
+        // Check if user is admin
+        if (Auth::user()->role !== 'admin') {
+            return redirect()->route('movies.index')->with('error', 'Unauthorized access.');
+        }
+
+        // Delete the cover image if it exists
         if ($movie->cover && Storage::disk('public')->exists($movie->cover)) {
             Storage::disk('public')->delete($movie->cover);
         }
 
+        // Delete the movie from the database
         $movie->delete();
 
         return redirect()->route('movies.index')->with('success', 'Movie deleted successfully!');
     }
-
 }
