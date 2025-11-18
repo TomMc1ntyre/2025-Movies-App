@@ -41,11 +41,25 @@
                 <input type="number" name="release_year" id="release_year" value="{{ old('release_year', $movie->release_year) }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
             </div>
 
+            <div class="mb-4">
+                <label for="award" class="block text-gray-700 font-bold mb-2">Award (optional)</label>
+                <input
+                    type="text"
+                    name="award"
+                    id="award"
+                    placeholder="Best Picture, Best Actor etc."
+                    value="{{ old('award', $movie->award ?? '') }}"
+                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                >
+            </div>
+
             <!-- Movie Image -->
             <div class="mb-4">
                 <label class="block text-gray-700 font-bold mb-2" for="cover">Movie Poster</label>
                 <input type="file" name="cover" id="cover" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
             </div>
+
+
 
             <!-- Submit Button -->
             <div class="flex items-center justify-between">
@@ -57,6 +71,8 @@
                     Cancel
                 </a>
             </div>
+
+
         </form>
     </div>
 </x-app-layout>
