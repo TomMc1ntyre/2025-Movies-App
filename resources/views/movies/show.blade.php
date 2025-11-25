@@ -6,68 +6,101 @@
     </x-slot>
 
     <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 bg-white border-b border-gray-200 items-center">
+        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white shadow-md rounded-lg overflow-hidden">
 
-                    {{-- Movie Title --}}
-                    <h3 class="text-lg font-medium text-gray-900">{{ $movie->title }}</h3>
+                <div class="p-6">
 
-                    {{-- Movie Description --}}
-                    <p class="mt-2 text-gray-600">{{ $movie->description }}</p>
+                    {{-- Top Section: Title + Cover --}}
+                    <div class="flex gap-6">
 
-                    {{-- Movie Cover Image --}}
-                    <div class="mt-4">
-                        <img src="{{ asset('covers/' . $movie->cover) }}"
-                             alt="{{ $movie->title }}"
-                             class="w-48 h-72 object-cover rounded-md">
+                        {{-- Cover Image --}}
+                        <div>
+                            <img src="/covers/{{ $movie->cover }}"
+                                alt="{{ $movie->title }}"
+                                class="w-48 h-72 object-cover rounded-md">
+
+                        </div>
+
+                        {{-- Title + Description --}}
+                        <div class="flex-1">
+                            <h3 class="text-3xl font-bold text-gray-900">{{ $movie->title }}</h3>
+
+                            <p class="mt-3 text-gray-700 leading-relaxed">
+                                {{ $movie->description }}
+                            </p>
+
+                            {{-- Release Year --}}
+                            <p class="mt-4 text-gray-600">
+                                <span class="font-semibold">Release Year:</span>
+                                {{ $movie->release_year }}
+                            </p>
+
+                            {{-- Genre --}}
+                            <p class="mt-1 text-gray-600">
+                                <span class="font-semibold">Genre:</span>
+                                {{ $movie->genre }}
+                            </p>
+
+                            {{-- Award --}}
+                            <p class="mt-1 text-gray-600">
+                                <span class="font-semibold">Award:</span>
+                                {{ $movie->award ?? 'This movie has won no awards.' }}
+                            </p>
+                        </div>
                     </div>
 
-                    {{-- Release Year --}}
-                    <p class="mt-2 text-gray-600">
-                        <strong>Release Year:</strong> {{ $movie->release_year }}
-                    </p>
+                    {{-- Divider --}}
+                    <hr class="my-6 border-gray-300">
 
-                    {{-- Genre --}}
-                    <p class="mt-2 text-gray-600">
-                        <strong>Genre:</strong> {{ $movie->genre }}
-                    </p>
+                    {{-- Actors --}}
+                    <div>
+                        <p class="text-lg font-semibold text-gray-800 mb-2">Actors</p>
 
-                    {{-- Award (Simple text field, no relationship) --}}
-                    @if($movie->award)
-                        <p class="mt-2 text-gray-600">
-                            <strong>Award:</strong> {{ $movie->award }}
-                        </p>
-                    @else
-                        <p class="mt-2 text-gray-600">
-                            <strong>Award:</strong> This movie has won no awards.
-                        </p>
-                    @endif
+                        @if($movie->actors->count() > 0)
+                            <div class="flex flex-wrap gap-2">
+                                @foreach($movie->actors as $actor)
+                                    <span class="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-sm shadow-sm">
+                                        {{ $actor->name }}
+                                    </span>
+                                @endforeach
+                            </div>
+                        @else
+                            <p class="text-gray-600">No actors listed.</p>
+                        @endif
+                    </div>
 
-                    {{-- Admin-only Edit/Delete UI --}}
+                    {{-- Divider --}}
+                    <hr class="my-6 border-gray-300">
+
+                    {{-- Admin Buttons --}}
                     @if(Auth::check() && Auth::user()->role === 'admin')
-                        {{-- Edit Button --}}
-                        <a href="{{ route('movies.edit', $movie->id) }}"
-                           class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 mt-4 inline-block">
-                            Edit
-                        </a>
+                        <div class="flex gap-3">
 
-                        {{-- Delete Button --}}
-                        <form action="{{ route('movies.destroy', $movie->id) }}" method="POST"
-                              onsubmit="return confirm('Are you sure you want to delete this movie?');"
-                              style="display: inline;">
-                            @csrf
-                            @method('DELETE')
+                            {{-- Edit --}}
+                            <a href="{{ route('movies.edit', $movie->id) }}"
+                               class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 shadow">
+                                Edit
+                            </a>
 
-                            <button type="submit"
-                                    class="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700">
-                                Delete
-                            </button>
-                        </form>
+                            {{-- Delete --}}
+                            <form action="{{ route('movies.destroy', $movie->id) }}"
+                                  method="POST"
+                                  onsubmit="return confirm('Are you sure you want to delete this movie?');">
+                                @csrf
+                                @method('DELETE')
+
+                                <button type="submit"
+                                        class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 shadow">
+                                    Delete
+                                </button>
+                            </form>
+                        </div>
                     @endif
 
                 </div>
             </div>
         </div>
     </div>
+
 </x-app-layout>

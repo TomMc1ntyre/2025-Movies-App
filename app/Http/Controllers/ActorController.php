@@ -4,62 +4,83 @@ namespace App\Http\Controllers;
 
 use App\Models\Actor;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ActorController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    // Show list of all actors //
     public function index()
     {
-        //
+        $actors = Actor::orderBy('name')->get();
+
+        return view('actors.index', compact('actors'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
+    // Show form to create a new actor (admin only) //
     public function create()
     {
-        //
+        if (!Auth::check() || Auth::user()->role !== 'admin') {
+            return redirect()->route('actors.index')->with('error', 'Unauthorized.');
+        }
+
+        return view('actors.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    // Store a new actor in the database (admin only) //
     public function store(Request $request)
     {
-        //
+        if (!Auth::check() || Auth::user()->role !== 'admin') {
+            return redirect()->route('actors.index')->with('error', 'Unauthorized.');
+        }
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
+
+        Actor::create([
+            'name' => $request->name,
+        ]);
+
+        return redirect()->route('actors.index')->with('success', 'Actor created.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Actor $actor)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
+    // Show form to edit an actor (admin only) //
     public function edit(Actor $actor)
     {
-        //
+        if (!Auth::check() || Auth::user()->role !== 'admin') {
+            return redirect()->route('actors.index')->with('error', 'Unauthorized.');
+        }
+
+        return view('actors.edit', compact('actor'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
+    // Update an actor (admin only) //
     public function update(Request $request, Actor $actor)
     {
-        //
+        if (!Auth::check() || Auth::user()->role !== 'admin') {
+            return redirect()->route('actors.index')->with('error', 'Unauthorized.');
+        }
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
+
+        $actor->update([
+            'name' => $request->name,
+        ]);
+
+        return redirect()->route('actors.index')->with('success', 'Actor updated.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+    // Delete an actor (admin only) //
     public function destroy(Actor $actor)
     {
-        //
+        if (!Auth::check() || Auth::user()->role !== 'admin') {
+            return redirect()->route('actors.index')->with('error', 'Unauthorized.');
+        }
+
+        $actor->delete();
+
+        return redirect()->route('actors.index')->with('success', 'Actor deleted.');
     }
 }

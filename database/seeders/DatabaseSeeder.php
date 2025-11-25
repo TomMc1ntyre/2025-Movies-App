@@ -2,23 +2,30 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use App\Models\User;
 
 class DatabaseSeeder extends Seeder
 {
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
-        // User::factory(10)->create();
+        // Reset users table to avoid duplicates
+        DB::table('users')->truncate();
 
-        User::factory()->create([
+        // Create admin user
+        User::create([
             'name' => 'Test User',
             'email' => 'test@example.com',
+            'password' => bcrypt('password'),
+            'role' => 'admin',
+            'email_verified_at' => now(),
         ]);
-        $this ->call(MovieSeeder::class);
+
+        // Call other seeders
+        $this->call([
+            MovieSeeder::class,
+            ActorSeeder::class,
+        ]);
     }
 }

@@ -1,10 +1,11 @@
 <x-app-layout>
-    <div class="max-w-2xl mx-auto py-10">
-        <h2 class="text-3xl font-bold mb-6 text-center">Edit Movie</h2>
+    <div class="max-w-4xl mx-auto py-10">
 
-        <!-- Display validation errors -->
+        <h2 class="text-3xl font-bold mb-8 text-center">Edit Movie</h2>
+
+        {{-- Validation Errors --}}
         @if ($errors->any())
-            <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+            <div class="mb-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
                 <ul class="list-disc list-inside">
                     @foreach ($errors->all() as $error)
                         <li>{{ $error }}</li>
@@ -13,66 +14,121 @@
             </div>
         @endif
 
-        <form action="{{ route('movies.update', $movie->id) }}" method="POST" enctype="multipart/form-data" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+
+        <form action="{{ route('movies.update', $movie->id) }}"
+              method="POST"
+              enctype="multipart/form-data"
+              class="bg-white shadow-lg rounded-xl px-10 pt-8 pb-12">
+
             @csrf
             @method('PUT')
 
-            <!-- Movie Title -->
-            <div class="mb-4">
-                <label class="block text-gray-700 font-bold mb-2" for="title">Title</label>
-                <input type="text" name="title" id="title" value="{{ old('title', $movie->title) }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            {{-- GRID LAYOUT --}}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+                {{-- Title --}}
+                <div>
+                    <label class="block text-gray-800 font-semibold mb-2">Title</label>
+                    <input type="text"
+                           name="title"
+                           value="{{ old('title', $movie->title) }}"
+                           class="w-full border rounded-lg p-3 focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+
+                {{-- Genre --}}
+                <div>
+                    <label class="block text-gray-800 font-semibold mb-2">Genre</label>
+                    <input type="text"
+                           name="genre"
+                           value="{{ old('genre', $movie->genre) }}"
+                           class="w-full border rounded-lg p-3 focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+
+                {{-- Release Year --}}
+                <div>
+                    <label class="block text-gray-800 font-semibold mb-2">Release Year</label>
+                    <input type="number"
+                           name="release_year"
+                           value="{{ old('release_year', $movie->release_year) }}"
+                           class="w-full border rounded-lg p-3 focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+
+                {{-- Award --}}
+                <div>
+                    <label class="block text-gray-800 font-semibold mb-2">Award (optional)</label>
+                    <input type="text"
+                           name="award"
+                           value="{{ old('award', $movie->award ?? '') }}"
+                           placeholder="Best Picture, Best Actor..."
+                           class="w-full border rounded-lg p-3 focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
             </div>
 
-            <!-- Genre -->
-            <div class="mb-4">
-                <label class="block text-gray-700 font-bold mb-2" for="genre">Genre</label>
-                <input type="text" name="genre" id="genre" value="{{ old('genre', $movie->genre) }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-            </div>
 
-            <!-- Movie Description -->
-            <div class="mb-4">
-                <label class="block text-gray-700 font-bold mb-2" for="description">Description</label>
-                <textarea name="description" id="description" rows="4" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">{{ old('description', $movie->description) }}</textarea>
-            </div>
-
-            <!-- Release Year -->
-            <div class="mb-4">
-                <label class="block text-gray-700 font-bold mb-2" for="release_year">Release Year</label>
-                <input type="number" name="release_year" id="release_year" value="{{ old('release_year', $movie->release_year) }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-            </div>
-
-            <div class="mb-4">
-                <label for="award" class="block text-gray-700 font-bold mb-2">Award (optional)</label>
-                <input
-                    type="text"
-                    name="award"
-                    id="award"
-                    placeholder="Best Picture, Best Actor etc."
-                    value="{{ old('award', $movie->award ?? '') }}"
-                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                >
-            </div>
-
-            <!-- Movie Image -->
-            <div class="mb-4">
-                <label class="block text-gray-700 font-bold mb-2" for="cover">Movie Poster</label>
-                <input type="file" name="cover" id="cover" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            {{-- DESCRIPTION FULL WIDTH --}}
+            <div class="mt-8">
+                <label class="block text-gray-800 font-semibold mb-2">Description</label>
+                <textarea name="description"
+                          rows="4"
+                          class="w-full border rounded-lg p-3 focus:ring-indigo-500 focus:border-indigo-500">{{ old('description', $movie->description) }}</textarea>
             </div>
 
 
+            {{-- ACTORS --}}
+            <div class="mt-10">
+                <label class="block text-gray-800 font-semibold mb-3">Actors</label>
 
-            <!-- Submit Button -->
-            <div class="flex items-center justify-between">
-                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-black font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                <div class="flex flex-wrap gap-2">
+
+                    @foreach($actors as $actor)
+                        <label class="cursor-pointer">
+                            <input type="checkbox"
+                                   name="actors[]"
+                                   value="{{ $actor->id }}"
+                                   class="hidden peer"
+                                   @if($movie->actors->contains($actor->id)) checked @endif>
+
+                            <span class="px-4 py-2 rounded-full border border-gray-300 peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600 transition">
+                                {{ $actor->name }}
+                            </span>
+                        </label>
+                    @endforeach
+
+                </div>
+
+                <p class="text-gray-500 text-sm mt-2">Click to toggle actors.</p>
+            </div>
+
+
+            {{-- POSTER --}}
+            <div class="mt-10">
+                <label class="block text-gray-800 font-semibold mb-2">Movie Poster</label>
+                <input type="file"
+                       name="cover"
+                       class="w-full border rounded-lg p-3 focus:ring-indigo-500 focus:border-indigo-500">
+
+                {{-- Existing Preview --}}
+                @if($movie->cover)
+                    <img src="{{ asset('covers/' . $movie->cover) }}"
+                         class="w-32 h-44 mt-4 rounded shadow border">
+                @endif
+            </div>
+
+
+            {{-- BUTTONS --}}
+            <div class="mt-12 flex justify-between">
+                <button type="submit"
+                        class="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition">
                     Update Movie
                 </button>
 
-                <a href="{{ route('movies.index') }}" class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800">
+                <a href="{{ route('movies.index') }}"
+                   class="text-indigo-600 hover:text-indigo-800 font-semibold">
                     Cancel
                 </a>
             </div>
 
-
         </form>
+
     </div>
 </x-app-layout>

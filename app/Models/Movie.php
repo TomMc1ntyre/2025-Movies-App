@@ -13,9 +13,16 @@ class Movie extends Model
         'title',
         'description',
         'release_year',
-        'cover',
+        'covers',
         'genre',
         'award',
     ];
+
+    // A movie can have many actors //
+    public function actors()
+    {
+        return $this->belongsToMany(Actor::class);
+    }
+
 
 }

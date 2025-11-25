@@ -3,16 +3,22 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MovieController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ActorController;
+
 
 // Home
 Route::get('/', function () {
     return view('welcome');
 });
 
+
 // Dashboard (requires auth)
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
+
+// Actors resource routes //
+Route::resource('actors', ActorController::class);
 
 // Movies
 Route::get('/movies', [MovieController::class, 'index'])->name('movies.index');

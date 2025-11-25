@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Actor;
 use App\Models\Movie;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -29,11 +30,16 @@ class MovieController extends Controller
     {
         // Only logged in users can create //
         if (!Auth::check()) {
-            return redirect()->route('movies.index')->with('error', 'You must be logged in.');
+            return redirect()->route('movies.index')
+                ->with('error', 'You must be logged in to create a movie.');
         }
 
-        return view('movies.create');
+        // Get all actors for multi select //
+        $actors = Actor::orderBy('name')->get();
+
+        return view('movies.create', compact('actors'));
     }
+
 
     // Store a new movie in the database //
     public function store(Request $request)
@@ -49,7 +55,11 @@ class MovieController extends Controller
             'release_year' => 'required|integer',
             'cover' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'genre' => 'required|string|max:100',
-            'award' => 'nullable|string|max:255'
+            'award' => 'nullable|string|max:255',
+
+            // NEW: validation for actors //
+            'actors' => 'nullable|array',
+            'actors.*' => 'exists:actors,id',
         ]);
 
         // Handle cover upload //
@@ -62,7 +72,7 @@ class MovieController extends Controller
         }
 
         // Create movie //
-        Movie::create([
+        $movie = Movie::create([
             'title' => $request->title,
             'description' => $request->description,
             'release_year' => $request->release_year,
@@ -70,6 +80,11 @@ class MovieController extends Controller
             'genre' => $request->genre,
             'award' => $request->award,
         ]);
+
+        // NEW: attach selected actors //
+        if ($request->filled('actors')) {
+            $movie->actors()->attach($request->actors);
+        }
 
         return redirect()->route('movies.index')->with('success', 'Movie created.');
     }
@@ -87,7 +102,10 @@ class MovieController extends Controller
             return redirect()->route('movies.index')->with('error', 'Unauthorized.');
         }
 
-        return view('movies.edit', compact('movie'));
+        // NEW: load actors for multi-select //
+        $actors = Actor::orderBy('name')->get();
+
+        return view('movies.edit', compact('movie', 'actors'));
     }
 
     // Update movie record //
@@ -104,7 +122,11 @@ class MovieController extends Controller
             'release_year' => 'required|integer',
             'genre' => 'required|string|max:100',
             'cover' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'award' => 'nullable|string|max:255'
+            'award' => 'nullable|string|max:255',
+
+            // NEW: validation for actors //
+            'actors' => 'nullable|array',
+            'actors.*' => 'exists:actors,id',
         ]);
 
         $data = $request->only('title', 'description', 'release_year', 'genre', 'award');
@@ -119,6 +141,9 @@ class MovieController extends Controller
 
         $movie->update($data);
 
+        // NEW: sync actors (replace old ones) //
+        $movie->actors()->sync($request->input('actors', []));
+
         return redirect()->route('movies.index')->with('success', 'Movie updated.');
     }
 
@@ -130,9 +155,10 @@ class MovieController extends Controller
         }
 
         // Delete old cover if it exists //
-        if ($movie->cover && Storage::disk('public')->exists($movie->cover)) {
-            Storage::disk('public')->delete($movie->cover);
+        if ($movie->cover && file_exists(public_path('covers/' . $movie->cover))) {
+            unlink(public_path('covers/' . $movie->cover));
         }
+
 
         $movie->delete();
 
