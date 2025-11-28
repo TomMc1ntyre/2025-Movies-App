@@ -44,11 +44,13 @@ class MovieController extends Controller
     // Store a new movie in the database //
     public function store(Request $request)
     {
+
+
         if (!Auth::check()) {
             return redirect()->route('movies.index')->with('error', 'Unauthorized.');
         }
 
-        // Validate input //
+        // Validate input
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
@@ -57,21 +59,22 @@ class MovieController extends Controller
             'genre' => 'required|string|max:100',
             'award' => 'nullable|string|max:255',
 
-            // NEW: validation for actors //
+            // Allow empty actors list
             'actors' => 'nullable|array',
-            'actors.*' => 'exists:actors,id',
+            'actors.*' => 'nullable|exists:actors,id',
         ]);
 
-        // Handle cover upload //
+
+        // Handle cover upload
+        $coverName = null;
+
         if ($request->hasFile('cover')) {
             $cover = $request->file('cover');
             $coverName = time() . '.' . $cover->getClientOriginalExtension();
             $cover->move(public_path('covers'), $coverName);
-        } else {
-            $coverName = null;
         }
 
-        // Create movie //
+        // Create movie
         $movie = Movie::create([
             'title' => $request->title,
             'description' => $request->description,
@@ -81,13 +84,14 @@ class MovieController extends Controller
             'award' => $request->award,
         ]);
 
-        // NEW: attach selected actors //
+        // Attach actors
         if ($request->filled('actors')) {
             $movie->actors()->attach($request->actors);
         }
 
         return redirect()->route('movies.index')->with('success', 'Movie created.');
     }
+
 
     // Display a single movie //
     public function show(Movie $movie)

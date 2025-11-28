@@ -14,8 +14,10 @@
                     <x-movie-form
                         :action="route('movies.store')"
                         method="POST"
+                        :movie="null"
                         :actors="$actors"
                     />
+
                 </div>
             </div>
         </div>

@@ -13,7 +13,7 @@ class Movie extends Model
         'title',
         'description',
         'release_year',
-        'covers',
+        'cover',
         'genre',
         'award',
     ];

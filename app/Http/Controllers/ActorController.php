@@ -16,6 +16,15 @@ class ActorController extends Controller
         return view('actors.index', compact('actors'));
     }
 
+    // Show a single actor and their movies //
+    public function show(Actor $actor)
+    {
+        // Load all movies this actor appears in
+        $actor->load('movies');
+
+        return view('actors.show', compact('actor'));
+    }
+
     // Show form to create a new actor (admin only) //
     public function create()
     {
