@@ -64,6 +64,22 @@
                 </div>
             </div>
 
+            {{-- AUTHOR --}}
+            <div class="mt-10">
+                <label class="block text-gray-800 font-semibold mb-2">Author</label>
+
+                <select name="author_id" class="w-full border rounded-lg p-3 focus:ring-indigo-500">
+                    <option value="">— No Author Assigned —</option>
+
+                    @foreach($authors as $author)
+                        <option value="{{ $author->id }}"
+                            @if($movie->author_id == $author->id) selected @endif>
+                            {{ $author->name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
 
             {{-- DESCRIPTION FULL WIDTH --}}
             <div class="mt-8">

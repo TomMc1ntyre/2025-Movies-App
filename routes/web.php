@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MovieController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ActorController;
+use App\Http\Controllers\AuthorController;
+
 
 // Home
 Route::get('/', function () {
@@ -17,6 +19,9 @@ Route::get('/dashboard', function () {
 
 // Actors
 Route::resource('actors', ActorController::class);
+
+// Authors
+Route::resource('authors', AuthorController::class);
 
 // Movies
 Route::get('/movies', [MovieController::class, 'index'])->name('movies.index');

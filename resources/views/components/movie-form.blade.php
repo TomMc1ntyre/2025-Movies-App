@@ -1,9 +1,5 @@
-@props([
-    'action',
-    'method' => 'POST',
-    'movie' => null,
-    'actors' => [],
-])
+@props(['action', 'method', 'movie' => null, 'actors' => [], 'authors' => []])
+
 
 <form action="{{ $action }}" method="POST" enctype="multipart/form-data">
     @csrf
@@ -59,9 +55,25 @@
                class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500">
     </div>
 
-    {{-- Actors (pill selector) --}}
+    {{-- Author --}}
+    <div class="mb-4">
+        <label class="block text-gray-700 font-semibold mb-1">Author</label>
+        <select name="author_id" class="w-full border rounded px-3 py-2">
+            <option value="">-- No Author Assigned --</option>
+
+            @foreach ($authors as $author)
+                <option value="{{ $author->id }}"
+                    @if(isset($movie) && $movie->author_id == $author->id) selected @endif>
+                    {{ $author->name }}
+                </option>
+            @endforeach
+        </select>
+    </div>
+
+
+
+    {{-- Actors--}}
     @php
-        // what should be selected? (handles validation errors + edit form)
         $selectedActorIds = collect(
             old('actors', isset($movie) ? $movie->actors->pluck('id')->toArray() : [])
         );

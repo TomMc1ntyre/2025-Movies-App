@@ -16,6 +16,8 @@ class Movie extends Model
         'cover',
         'genre',
         'award',
+        'author_id',
+
     ];
 
     // A movie can have many actors //
@@ -24,9 +26,9 @@ class Movie extends Model
         return $this->belongsToMany(Actor::class);
     }
 
-    public function authors()
+    public function author()
     {
-        return $this->belongsToMany(Author::class);
+        return $this->belongsTo(\App\Models\Author::class);
     }
 
 

@@ -16,7 +16,9 @@
                         method="POST"
                         :movie="null"
                         :actors="$actors"
+                        :authors="$authors"
                     />
+
 
                 </div>
             </div>

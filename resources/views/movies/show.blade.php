@@ -70,6 +70,22 @@
                         @endif
                     </div>
 
+                    {{-- AUTHOR --}}
+                    <hr class="my-6 border-gray-300">
+
+                    <div>
+                        <p class="text-lg font-semibold text-gray-800 mb-2">Author</p>
+
+                        @if($movie->author)
+                            <p class="text-indigo-700 font-medium text-lg">
+                                {{ $movie->author->name }}
+                            </p>
+                        @else
+                            <p class="text-gray-600">No author assigned.</p>
+                        @endif
+                    </div>
+
+
                     {{-- Divider --}}
                     <hr class="my-6 border-gray-300">
 
